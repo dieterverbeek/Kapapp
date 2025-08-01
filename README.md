@@ -6,7 +6,7 @@ sudo nano /etc/systemd/system/kapperapp.service
 -->	Zeker de static en media goed formuleren
 --> Voor gunicorn background service
 
-
+``` ini
 [Unit]
 Description=Gunicorn instance to serve kapperapp
 After=network.target
@@ -23,7 +23,7 @@ StandardError=journal
 
 [Install]
 WantedBy=multi-user.target
-
+```
 
 
 
@@ -33,7 +33,7 @@ WantedBy=multi-user.target
 -->	Eerst zonder https, dus zonder poort 443
 --> IP aanpassen
 
-
+``` ini
 server {
     if ($host = www.hairapp.be) {
         return 301 https://$host$request_uri;
@@ -50,7 +50,7 @@ server {
     return 404; # managed by Certbot
 
 }
-
+```
 
 
 
@@ -60,7 +60,7 @@ server {
 -------------------------------------
 --> Dit is voor "NGINX" Bij gebruik certbot, komt er dee ssl-certs bij.
 
-
+``` ini
 server {
     server_name hairapp.be www.hairapp.be 16.171.138.211;
 
@@ -85,7 +85,7 @@ server {
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 
 }
-
+```
 
 
 sudo systemctl daemon-reload
