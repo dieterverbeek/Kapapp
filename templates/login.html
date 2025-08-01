@@ -1,0 +1,300 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="48x48" href="{% static 'images/favicon-48x48.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'images/android-chrome-192x192.png' %}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{% static 'images/android-chrome-512x512.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <title>Kapperapp Login</title>
+   <style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column; /* Content stapelt verticaal: logo boven inlogkader */
+        align-items: center; /* Horizontaal centreren van de items (logo en inlogkader) */
+        justify-content: center; /* Verticaal centreren van de hele inhoud op grote schermen */
+        min-height: 100vh;
+        background-image: url('{% static "images/index.png" %}'); /* De grote achtergrondafbeelding */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        color: #fff;
+    }
+
+    /* Standaardstijl voor de logo-container (VERBORGEN op desktop) */
+    #logo-container {
+        display: none; /* Standaard verborgen op grotere schermen */
+        text-align: center; /* Zorgt dat de img in het midden van de div zit */
+    }
+    #logo-container img {
+        max-width: 100%; /* Zorgt ervoor dat de afbeelding binnen zijn container blijft */
+        height: auto;
+        object-fit: cover; /* Zorgt dat de afbeelding de ronde vorm vult zonder te vervormen */
+        /* ZWART-GOUDEN GLOEI EFFECT */
+        filter: drop-shadow(0 0 10px gold) drop-shadow(0 0 20px black); /* Subtiele goud, dan bredere zwarte schaduw */
+    }
+
+    .login-container {
+        background: linear-gradient(135deg, #667eead0 0%, #764ba2c0 100%);
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        text-align: center;
+        width: 350px;
+        max-width: 90%;
+        /* VERWIJDERD: border: 1px solid rgba(255, 255, 255, 0.3); */
+    }
+
+    .login-container h2 {
+        margin-bottom: 30px;
+        color: #fff;
+        font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+        font-size: 2.2em;
+        letter-spacing: 1px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+        text-align: left;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+    }
+
+    .form-control {
+        width: calc(100% - 20px);
+        padding: 12px 10px;
+        border: 1px solid #555;
+        border-radius: 5px;
+        background-color: #3333333f;
+        color: #fdfdfd;
+        font-size: 16px;
+    }
+
+    .form-control::placeholder {
+        color: #bbb;
+    }
+
+    .btn-primary {
+    /* Basisstijlen van je originele knop */
+    background: linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%);
+    color: #2c2a2a; /* Wit is vaak beter leesbaar op groen dan #333 */
+    padding: 15px 25px;
+    border: none; /* Geen rand nodig bij gebruik van box-shadow */
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    width: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtielere start-shadow */
+    transition: all 0.3s ease;
+
+    /* Essentieel voor de veeg-animatie */
+    position: relative;
+    overflow: hidden;
+}
+
+/* De veeg-animatie laag (::before pseudo-element) */
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+/* Effecten wanneer je met de muis over de knop gaat */
+.btn-primary:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Iets meer diepte bij hover */
+}
+
+/* Start de veeg-animatie bij hover */
+.btn-primary:hover::before {
+    left: 100%;
+}
+
+/* Effect wanneer de knop wordt ingedrukt */
+.btn-primary:active {
+    background: linear-gradient(135deg, #43A047 0%, #7CB342 100%); /* Iets donkerder groen */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transform: translateY(0);
+}
+
+    .messages {
+        list-style: none;
+        padding: 0;
+        margin-top: 20px;
+        color: #ffdddd;
+    }
+
+    .messages li {
+        background-color: rgba(255, 0, 0, 0.2);
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        border: 1px solid red;
+    }
+
+    .messages li.success {
+        background-color: rgba(0, 255, 0, 0.2);
+        border: 1px solid green;
+        color: #ddffdd;
+    }
+
+    
+
+    /* MEDIA QUERIES */
+
+    /* Stijlen voor schermen die TUSSEN 481px en 768px zijn (alleen tablets) */
+    @media (min-width: 481px) and (max-width: 768px) {
+        /* Toon en style de logo-container op tablets */
+        #logo-container {
+            display: block;
+            width: 210px;
+            height: 210px;
+            margin-top: 50px;
+            margin-bottom: 40px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #logo-container img {
+            width: 100%;
+            height: 100%;
+            /* Gloed voor tablets */
+            filter: drop-shadow(0 0 30px black);
+        }
+
+        .login-container {
+            width: 300px;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+            margin-top: 0;
+            /* Login kader 10px naar rechts op tablets */
+            transform: translateX(10px);
+        }
+        .login-container h2 {
+            font-size: 2.5em;
+        }
+        .form-control {
+            padding: 10px 8px;
+            font-size: 15px;
+        }
+        .btn-primary {
+            padding: 12px 25px;
+            font-size: 1em;
+        }
+
+        /* Body styling voor tablets */
+        body {
+            justify-content: flex-start;
+        }
+    }
+
+    /* Stijlen voor extra kleine schermen (bijv. mobiele telefoons) */
+    @media (max-width: 480px) {
+        /* Toon en style de logo-container op mobiel */
+        #logo-container {
+            display: block;
+            width: 210px;
+            height: 210px;
+            margin-top: 50px;
+            margin-bottom: 40px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #logo-container img {
+            width: 100%;
+            height: 100%;
+            /* Gloed voor mobiel (kan afwijken indien gewenst) */
+            filter: drop-shadow(0 0 30px black);
+        }
+
+        .login-container {
+            width: 90%;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            margin-top: 0;
+            /* GEEN transform: translateX hier, dus blijft gecentreerd */
+        }
+        .login-container h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        .form-control {
+            padding: 8px 6px;
+            font-size: 14px;
+        }
+        .btn-primary {
+            padding: 10px 20px;
+            font-size: 0.9em;
+        }
+
+        /* Body styling voor mobiel */
+        body {
+            justify-content: flex-start;
+        }
+    }
+</style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const messages = document.querySelectorAll('.messages li');
+            messages.forEach(function(message) {
+                setTimeout(function() {
+                    message.style.opacity = '0';
+                    message.style.transition = 'opacity 0.5s ease-out';
+                    setTimeout(function() {
+                        message.remove();
+                    }, 500);
+                }, 5000);
+            });
+        });
+    </script>
+</head>
+<body>
+    <div id="logo-container">
+        <img src="{% static 'images/index-klein.png' %}" alt="Rond Kapperapp Logo">
+        </div>
+
+    <div class="login-container">
+        <h2>Hairsalon Elise</h2>
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+            </div>
+            <div class="form-group">
+                {{ form.password.label_tag }}
+                {{ form.password }}
+            </div>
+            <button type="submit" class="btn-primary">Inloggen</button>
+        </form>
+    </div>
+</body>
+</html>

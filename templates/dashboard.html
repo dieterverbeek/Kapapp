@@ -1,0 +1,517 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="48x48" href="{% static 'images/favicon-48x48.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'images/android-chrome-192x192.png' %}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{% static 'images/android-chrome-512x512.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> 
+    <style>
+    /* Algemene reset en basisstijlen */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box; /* Zorgt ervoor dat padding en border worden meegerekend in de afmetingen */
+    }
+    
+    body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eead0 0%, #764ba2c0 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    color: #2c3e50;
+    /* De padding is hier verwijderd */
+}
+
+    /* Header sectie (bovenaan de pagina) */
+    /* Header sectie (bovenaan de pagina) */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 20px; /* Geeft de header zijn eigen ruimte links, rechts en boven/onder */
+}
+
+/* Hoofdinhoud container */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    justify-content: center;
+    align-items: center;
+    padding: 15px 10px; /* Voegt boven/onder padding toe, maar nauwelijks opzij */
+
+    /* Achtergrond die de volledige breedte vult */
+    background-image: url("{% static 'images/dash.png' %}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+    .header h1 {
+        color: white;
+        font-size: 2.5em;
+        font-weight: 600;
+        text-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .logout-btn {
+        background: rgba(80, 13, 143, 0.589);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        text-decoration: none;
+        font-size: 0.9em;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
+    }
+
+    .logout-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Hoofdinhoud container - deze zorgt ervoor dat alles daaronder netjes wordt behandeld */
+    .main-content {
+        flex: 1; /* Zorgt ervoor dat deze container de resterende verticale ruimte opvult */
+        display: flex;
+        flex-direction: column; /* Stapelt de secties binnen main-content verticaal */
+        gap: 30px; /* Ruimte tussen de secties (dashboard en notes) */
+        justify-content: center; /* Centreert de inhoud (dashboard/notes) verticaal in de beschikbare ruimte */
+        align-items: center; /* Centreert de inhoud (dashboard/notes) horizontaal */
+        padding: 0 10px; /* Voeg wat horizontale padding toe */
+    }
+
+    /* Animatie */
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Dashboard Container */
+    .dashboard-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        max-width: 900px;
+        width: 100%; /* Neemt de volledige breedte in van de parent (main-content) */
+        animation: slideIn 0.8s ease-out; /* Animatie voor deze container */
+        /* margin: 50px auto; removed because flexbox parent .main-content handles centering */
+    }
+
+    .dashboard-container h2 {
+        color: #2c3e50;
+        font-size: 2.2em;
+        font-weight: 600;
+        margin-bottom: 30px;
+        text-align: center;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Knoppen raster op dashboard */
+    .button-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsieve kolommen */
+        gap: 25px;
+        max-width: 600px; /* Beperkt de breedte van het raster zelf */
+        margin: 0 auto; /* Centreert het raster horizontaal binnen dashboard-container */
+    }
+
+    .dashboard-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 30px;
+        border-radius: 15px;
+        text-decoration: none;
+        font-size: 1.3em;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+    }
+
+    .dashboard-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+
+    .dashboard-button:hover::before {
+        left: 100%;
+    }
+
+    .dashboard-button:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-klanten {
+        background: linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%);
+        color: #ffffff; /* Donkere tekstkleur voor contrast op goud */
+        padding: 15px 25px;
+        
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 1.1em;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        width: 100%;
+        box-shadow: 0 0px 8px rgba(0, 0, 0, 0.3);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex; /* Added for icon alignment */
+        align-items: center; /* Added for icon alignment */
+        justify-content: center; /* Added for icon alignment */
+    }
+
+    .btn-afrekenen {
+        background: linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%);
+        color: #ffffff; /* Donkere tekstkleur voor contrast op goud */
+        padding: 15px 25px;
+        
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 1.1em;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        width: 100%;
+        box-shadow: 0 0px 8px rgba(0, 0, 0, 0.3);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex; /* Added for icon alignment */
+        align-items: center; /* Added for icon alignment */
+        justify-content: center; /* Added for icon alignment */
+    }
+
+    /* Styles for the icons within the buttons */
+    .dashboard-button i {
+        margin-right: 10px; /* Space between icon and text */
+        font-size: 1.5em; /* Adjust icon size as needed */
+    }
+
+    /* Notities sectie */
+    .notes-section {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        animation: slideIn 0.8s ease-out 0.2s both;
+        max-width: 900px; /* Max. breedte van de notities sectie */
+        width: 100%; /* Neemt de volledige breedte in van de parent (main-content) */
+        /* Geen margin: auto; of positionering hier nodig, de parent regelt het */
+    }
+
+    .notes-section h3 {
+        color: #2c3e50;
+        font-size: 1.8em;
+        font-weight: 600;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .notes-form {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 25px;
+        /* max-width: 900px; removed here, let .notes-section define max-width */
+        width: 100%; /* Zorgt ervoor dat het formulier de volledige breedte van de parent inneemt */
+    }
+
+    .notes-input {
+        flex: 1;
+        padding: 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 1em;
+        background: #fafafa;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+
+    .notes-input:focus {
+        outline: none;
+        border-color: #667eea;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .add-note-btn {
+        padding: 15px 30px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .add-note-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .notes-list {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .note-item {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+    .note-item:hover {
+        background: #e9ecef;
+        transform: translateX(5px);
+    }
+
+    .note-text {
+        flex: 1;
+        color: #2c3e50;
+        font-size: 1em;
+        line-height: 1.4;
+    }
+
+    .note-date {
+        color: #7f8c8d;
+        font-size: 0.9em;
+        margin-right: 15px;
+    }
+
+    .delete-note-btn {
+        background: #e74c3c;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9em;
+        transition: all 0.3s ease;
+    }
+
+    .delete-note-btn:hover {
+        background: #c0392b;
+        transform: scale(1.05);
+    }
+
+    .empty-notes {
+        text-align: center;
+        color: #7f8c8d;
+        font-style: italic;
+        padding: 40px;
+    }
+
+    .title-container {
+    display: flex;
+    align-items: center; /* Lijn de afbeelding en tekst verticaal uit */
+    gap: 15px;            /* Ruimte tussen de afbeelding en de tekst */
+}
+
+.title-icon {
+    height: 60px; /* Pas deze hoogte aan om overeen te komen met de tekstgrootte */
+}
+
+    /* Media Queries voor responsiviteit */
+    @media (max-width: 768px) {
+        body {
+            padding: 15px; /* Minder padding op kleinere schermen */
+        }
+
+        .header {
+            flex-direction: column; /* Stapelt header items verticaal */
+            gap: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 1.7em;
+        }
+        
+        .main-content {
+            gap: 20px; /* Minder ruimte tussen secties op mobiel */
+            background-image: none;
+        }
+
+        .dashboard-container {
+            padding: 20px;
+        }
+        
+        .dashboard-container h2 {
+            font-size: 1.8em;
+        }
+
+        .button-grid {
+            grid-template-columns: 1fr; /* Knoppen onder elkaar op mobiel */
+            max-width: 100%; /* Neemt de volledige breedte in */
+        }
+        
+        .notes-section {
+            padding: 20px;
+        }
+        
+        .notes-section h3 {
+            font-size: 1.5em;
+        }
+
+        .notes-form {
+            flex-direction: column; /* Stapelt formulieritems verticaal */
+            gap: 10px;
+        }
+        
+        .notes-input, .add-note-btn {
+            width: 100%; /* Full width voor input en knop */
+        }
+        
+        .note-item {
+            flex-direction: column; /* Notitie-items stapelen verticaal */
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .note-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            width: 100%; /* Zorgt dat acties de breedte opvullen */
+            justify-content: flex-end; /* Acties naar rechts uitlijnen */
+        }
+        /* Zorg dat de delete knop niet te klein wordt op mobiel */
+        .delete-note-btn {
+            padding: 10px 15px;
+            font-size: 0.85em;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .header h1 {
+            font-size: 1.8em;
+        }
+        .dashboard-container h2 {
+            font-size: 1.5em;
+        }
+        .notes-section h3 {
+            font-size: 1.3em;
+        }
+        .dashboard-button {
+            padding: 20px; /* Minder padding op zeer kleine schermen */
+            font-size: 1.1em;
+        }
+    }
+</style>
+</head>
+<body>
+    <header class="header">
+    <div class="title-container">
+        <img src="{% static 'images/index-klein.png' %}" alt="Dashboard Icoon" class="title-icon">
+        <h1>Dashboard</h1>
+    </div>
+    <a href="{% url 'logout' %}" class="logout-btn">Uitloggen</a>
+</header>
+
+    <main class="main-content">
+        <div class="dashboard-container">
+            <div class="button-grid">
+                <a href="{% url 'klanten' %}" class="dashboard-button btn-klanten">
+                    <i class="fas fa-users"></i> Klanten 
+                </a>
+                <a href="{% url 'afrekenen' %}" class="dashboard-button btn-afrekenen">
+                    <i class="fas fa-cash-register"></i> Afrekenen 
+                </a>
+            </div>
+        </div>
+
+        <div class="notes-section">
+            <h3>Notities</h3>
+            <form class="notes-form" method="post" action="">
+                {% csrf_token %}
+                <input type="text" class="notes-input" name="note_text" placeholder="Voeg een notitie toe..." required>
+                <button type="submit" class="add-note-btn">Toevoegen</button>
+            </form>
+            
+            <div class="notes-list">
+                {% if notes %}
+                    {% for note in notes %}
+                    <div class="note-item">
+                        <span class="note-text">{{ note.text }}</span>
+                        <div class="note-actions">
+                            <span class="note-date">{{ note.created_at|date:"d-m-Y H:i" }}</span>
+                            <form method="post" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="delete_note_id" value="{{ note.id }}">
+                                <button type="submit" class="delete-note-btn" onclick="return confirm('Weet je zeker dat je deze notitie wilt verwijderen?')">Verwijderen</button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-notes">
+                        Geen notities gevonden. Voeg je eerste notitie toe!
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Optional: Add some interactivity for better UX
+        document.addEventListener('DOMContentLoaded', function() {
+            const notesForm = document.querySelector('.notes-form');
+            const notesInput = document.querySelector('.notes-input');
+            
+            // Auto-focus on the input when page loads
+            notesInput.focus();
+            
+            // Clear input after successful submission (you'd handle this in Django)
+            notesForm.addEventListener('submit', function(e) {
+                // This would be handled by Django, but we can add visual feedback
+                setTimeout(() => {
+                    notesInput.value = '';
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>

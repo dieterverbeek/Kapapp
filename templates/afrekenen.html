@@ -1,0 +1,916 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Afrekenen Diensten</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="48x48" href="{% static 'images/favicon-48x48.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'images/android-chrome-192x192.png' %}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{% static 'images/android-chrome-512x512.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Algemene Reset en Body Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eead0 0%, #764ba2c0 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #2c3e50;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header Styling */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            animation: slideIn 0.8s ease-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 400px;
+            margin: 50px auto 30px; 
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .header .button-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            /* Zorg ervoor dat de container zelf de volledige breedte benut */
+            width: 100%; 
+        }
+
+        /* VERBETERDE BUTTON STYLING */
+        .btn {
+            /* Padding aanpassen om de hoogte en interne ruimte te controleren */
+            padding: 14px 20px; 
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+            color: white;
+            /* Dit zorgt ervoor dat de knop de volledige breedte van de flex-item inneemt */
+            flex-grow: 1; /* Nieuw: Zorgt ervoor dat de knop groeit om beschikbare ruimte te vullen */
+            min-width: 150px; /* Kleinere min-width om flexibel te zijn op smalle schermen */
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        /* Styles for Font Awesome icons in buttons */
+        .btn i {
+            font-size: 1.2em; /* Adjust icon size as needed */
+            transition: transform 0.3s ease;
+        }
+
+        .btn:hover i {
+            transform: scale(1.1);
+        }
+
+        /* Original SVG styling (can be removed if only using Font Awesome) */
+        .btn svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
+        }
+
+        .btn:hover svg {
+            transform: scale(1.1);
+        }
+
+        /* Groene gradient voor de knoppen */
+        .btn-green {
+            background: linear-gradient(135deg, #56ab2f 0%, #52bb94 100%); /* Groene gradient */
+            color: white;
+        }
+
+        .btn-green:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(86, 171, 47, 0.3); /* Groene schaduw */
+            background: linear-gradient(135deg, #52bb94 0%, #56ab2f 100%); /* Subtiele omkering bij hover */
+        }
+        
+        /* Grid voor Dienst Categorieën */
+        .dienst-categorie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .dienst-categorie {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .dienst-categorie h3 {
+            color: #667eea;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .dienst-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px dotted #e0e0e0;
+        }
+
+        .dienst-item:last-child {
+            border-bottom: none;
+        }
+
+        .dienst-item input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .dienst-naam {
+            flex-grow: 1;
+            color: #2c3e50;
+            font-size: 19px;
+        }
+        
+        .dienst-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dienst-controls input[type="number"] {
+            width: 60px;
+            text-align: center;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            padding: 2px;
+        }
+        
+        .dienst-prijs {
+            font-weight: 680;
+            color: #085f14;
+            white-space: nowrap;
+            font-size: 20px;
+        }
+
+        /* Totaal sectie */
+        .total-summary {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+
+        .klant-select-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .select2-container {
+            width: 100% !important; 
+        }
+
+        .klant-select-container label {
+            display: block;
+            margin-bottom: 12px;
+            color: #2c3e50;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+        
+        .choices {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin-bottom: 0;
+        }
+
+        .choices__inner {
+            background-color: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 10px !important;
+            padding: 8px 12px;
+            font-size: 1em;
+            min-height: auto;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .is-focused .choices__inner {
+            border-color: #667eea !important;
+            box-shadow: 0 0 8px rgba(102, 126, 234, 0.5);
+        }
+
+        .choices__input {
+            background-color: transparent !important;
+            color: #2c3e50;
+            font-size: 1em;
+            padding: 0;
+            margin: 0;
+        }
+        .choices__input::placeholder {
+            color: #8ca0b3;
+        }
+
+        .choices__list--dropdown {
+            margin-top: 8px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-radius: 10px !important;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .choices__item--choice {
+            padding: 10px 12px;
+            font-size: 1em;
+            color: #2c3e50;
+        }
+        .choices__item--choice.choices__item--selectable {
+            color: #2c3e50;
+        }
+
+        .choices__list--dropdown .choices__item--choice.is-highlighted {
+            background-color: #667eea;
+            color: white;
+        }
+
+        .choices__list--single .choices__item {
+            padding-right: 0;
+        }
+        .choices[data-type*="select-one"]::after {
+            content: '▼';
+            height: auto;
+            width: auto;
+            border: none;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            margin-top: 0;
+            pointer-events: none;
+            transition: transform 0.2s ease;
+            color: #667eea;
+        }
+        .choices[data-type*="select-one"].is-open::after {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        #geselecteerde-overzicht {
+            margin-bottom: 20px;
+        }
+
+        #geselecteerde-overzicht h4 {
+            font-size: 1.2em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .overzicht-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            font-size: 1em;
+        }
+
+        .overzicht-naam {
+            color: #34495e;
+        }
+
+        .overzicht-prijs {
+            font-weight: 600;
+            color: #27ae60;
+            white-space: nowrap;
+            font-size: 1em; /* Keep it consistent with other text */
+        }
+
+        .total-amount {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #764ba2;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .korting-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        .korting-container label {
+            margin-right: 10px;
+        }
+
+        .korting-container input[type="number"] {
+            width: 80px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+            text-align: right;
+        }
+
+        .korting-display {
+            font-weight: 600;
+            color: #e74c3c;
+            font-size: 1.1em;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .btn-save:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .button-container-bottom {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+
+        /* RESPONSIVE STYLING */
+        @media (max-width: 768px) {
+            .header { 
+                padding: 20px; 
+                max-width: 350px;
+            }
+            .header h1 { 
+                font-size: 2em; 
+            }
+            .header .button-container { 
+                flex-direction: column; 
+                align-items: center;
+                gap: 12px;
+                width: 100%; /* Belangrijk voor mobiel: zorgt ervoor dat de container de volle breedte pakt */
+            }
+            .btn { 
+                width: 100%; /* Zorgt ervoor dat knoppen de volle breedte van hun container pakken */
+                max-width: none; /* Verwijdert de max-width beperking voor mobiel */
+                padding: 12px 24px; 
+                font-size: 0.95em;
+                min-width: auto;
+            }
+            .dienst-categorie-grid { 
+                grid-template-columns: 1fr; 
+                gap: 20px; 
+            }
+            .dienst-categorie { 
+                padding: 15px; 
+            }
+            .dienst-categorie h3 { 
+                font-size: 1.2em; 
+            }
+            .dienst-item { 
+                font-size: 0.9em; 
+            }
+            .total-amount { 
+                font-size: 1.5em; 
+            }
+            .button-container-bottom {
+                justify-content: center;
+            }
+            .btn-save {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Afrekenen Diensten</h1>
+            <div class="button-container">
+                <a href="{% url 'dashboard' %}" class="btn btn-green">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+                <a href="{% url 'klanten' %}" class="btn btn-green">
+                    <i class="fas fa-users"></i> Klanten Overzicht
+                </a>
+            </div>
+        </div>
+
+        <div class="dienst-categorie-grid">
+            <div class="dienst-categorie">
+                <h3>Wassen & Verzorging</h3>
+                <div class="dienst-item">
+                    <input type="checkbox" id="wassen" data-price="3">
+                    <label for="wassen" class="dienst-naam">Wassen</label>
+                    <span class="dienst-prijs">€ 3</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="conditioner" data-price="3">
+                    <label for="conditioner" class="dienst-naam">Conditioner</label>
+                    <span class="dienst-prijs">€ 3</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="masker" data-price="4">
+                    <label for="masker" class="dienst-naam">Masker</label>
+                    <span class="dienst-prijs">€ 4</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="reconstructor" data-price="10">
+                    <label for="reconstructor" class="dienst-naam">Reconstructor</label>
+                    <span class="dienst-prijs">€ 10</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="color_corrector" data-price="8">
+                    <label for="color_corrector" class="dienst-naam">Color corrector</label>
+                    <span class="dienst-prijs">€ 8</span>
+                </div>
+            </div>
+            <div class="dienst-categorie">
+                <h3>Snit</h3>
+                <div class="dienst-item">
+                    <input type="checkbox" id="Heren/Vrouwen" data-price="25">
+                    <label for="Heren/Vrouwen" class="dienst-naam">Heren/Vrouw Snit</label>
+                    <span class="dienst-prijs">€ 25</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="kort/pixy" data-price="20">
+                    <label for="kort/pixy" class="dienst-naam">Kort haar pixy</label>
+                    <span class="dienst-prijs">€ 20</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="Midden/lang" data-price="25">
+                    <label for="Midden/lang" class="dienst-naam">Midden + lang snit</label>
+                    <span class="dienst-prijs">€ 25</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="baby" data-price="10">
+                    <label for="baby" class="dienst-naam">Snit Baby/kleuter</label>
+                    <span class="dienst-prijs">€ 10</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="kind" data-price="15">
+                    <label for="kind" class="dienst-naam">Snit Kind +6 jaar</label>
+                    <span class="dienst-prijs">€ 15</span>
+                </div>
+            </div>
+            <div class="dienst-categorie">
+                <h3>Blond technieken</h3>
+                <div class="dienst-item">
+                    <input type="checkbox" id="face_framing" data-price="35">
+                    <label for="face_framing" class="dienst-naam">Face framing</label>
+                    <span class="dienst-prijs">€ 35</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="t_zone_contour" data-price="45">
+                    <label for="t_zone_contour" class="dienst-naam">T-zone + contour</label>
+                    <span class="dienst-prijs">€ 45</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="hoofd_1_2" data-price="45">
+                    <label for="hoofd_1_2" class="dienst-naam">½ hoofd lokken</label>
+                    <span class="dienst-prijs">€ 45</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="hoofd_volledig_lokken" data-price="60">
+                    <label for="hoofd_volledig_lokken" class="dienst-naam">Volledig hoofd lokken</label>
+                    <span class="dienst-prijs">€ 60</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="10_folies" data-price="15">
+                    <label for="10_folies" class="dienst-naam">10 folies</label>
+                    <span class="dienst-prijs">€ 15</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="20_folies" data-price="25">
+                    <label for="20_folies" class="dienst-naam">20 folies</label>
+                    <span class="dienst-prijs">€ 25</span>
+                </div>
+            </div>
+            <div class="dienst-categorie">
+                <h3>Personal balyage</h3>
+                <div class="dienst-item">
+                    <input type="checkbox" id="pers_1/2_bijwerken" data-price="60">
+                    <label for="pers_1/2_bijwerken" class="dienst-naam">Personal balyage ½ Hoofd bijwerken</label>
+                    <span class="dienst-prijs">€ 60</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="Volledig_hoofd" data-price="80">
+                    <label for="Volledig_hoofd" class="dienst-naam">Personal balyage Volledig hoofd</label>
+                    <span class="dienst-prijs">€ 80</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="teasylights" data-price="80">
+                    <label for="teasylights" class="dienst-naam">½ hoofd teasylights</label>
+                    <span class="dienst-prijs">€ 80</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="volledig_teasylights" data-price="100">
+                    <label for="volledig_teasylights" class="dienst-naam">Volledig hoofd teasylights</label>
+                    <span class="dienst-prijs">€ 100</span>
+                </div>
+            </div>
+            <div class="dienst-categorie">
+                <h3>Free hand</h3>
+                <div class="dienst-item">
+                    <input type="checkbox" id="Free_hand_Balyage_spatola_kam" data-price="35">
+                    <label for="Free_hand_Balyage_spatola_kam" class="dienst-naam">Free hand Balyage met spatola of kam</label>
+                    <span class="dienst-prijs">€ 35</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="Free_hand_½_hoofd" data-price="65">
+                    <label for="Free_hand_½_hoofd" class="dienst-naam">Free hand ½ hoofd</label>
+                    <span class="dienst-prijs">€ 65</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="Free_hand_vol_hoofd" data-price="95">
+                    <label for="Free_hand_vol_hoofd" class="dienst-naam">Free hand volledig hoofd</label>
+                    <span class="dienst-prijs">€ 95</span>
+                </div>
+            </div>
+            <div class="dienst-categorie">
+                <h3>Brushing</h3>
+                <div class="dienst-item">
+                    <input type="checkbox" id="Brushing/kort" data-price="20">
+                    <label for="Brushing/kort" class="dienst-naam">Brushing Kort</label>
+                    <span class="dienst-prijs">€ 20</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="Brushing/medium" data-price="25">
+                    <label for="Brushing/medium" class="dienst-naam">Brushing Medium</label>
+                    <span class="dienst-prijs">€ 25</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="Brushing/lang" data-price="35">
+                    <label for="Brushing/lang" class="dienst-naam">Brushing Lang</label>
+                    <span class="dienst-prijs">€ 35</span>
+                </div>
+            </div>
+            <div class="dienst-categorie">
+                <h3>Opsteekwerk</h3>
+                <div class="dienst-item">
+                    <input type="checkbox" id="Opsteekwerk/kind" data-price="15">
+                    <label for="Opsteekwerk/kind" class="dienst-naam">Opsteekwerk kind</label>
+                    <span class="dienst-prijs">€ 15</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="Opsteekwerk/volwassen" data-price="20">
+                    <label for="Opsteekwerk/volwassen" class="dienst-naam">Opsteekwerk volwassen</label>
+                    <span class="dienst-prijs">€ 20</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="Opsteekwerk/volwassen_25" data-price="25"> <label for="Opsteekwerk/volwassen_25" class="dienst-naam">Opsteekwerk volwassen</label>
+                    <span class="dienst-prijs">€ 25</span>
+                </div>
+            </div>
+            <div class="dienst-categorie">
+                <h3>Ontkleuring</h3>
+                <div class="dienst-item">
+                    <input type="checkbox" id="ontkleuren_kort" data-price="40">
+                    <label for="ontkleuren_kort" class="dienst-naam">Volledige ontkleuring kort</label>
+                    <span class="dienst-prijs">€ 40</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="ontkleuren_lang" data-price="50">
+                    <label for="ontkleuren_lang" class="dienst-naam">Volledige ontkleuring lang</label>
+                    <span class="dienst-prijs">€ 50</span>
+                </div>
+            </div>
+            <div class="dienst-categorie">
+                <h3>Kleur Behandelingen</h3>
+                <div class="dienst-item">
+                    <input type="checkbox" id="lengtes" data-price="13">
+                    <label for="lengtes" class="dienst-naam">+ Lengtes</label>
+                    <span class="dienst-prijs">€ 13</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="lang_haar_ontkleuren_lengtes" data-price="60">
+                    <label for="lang_haar_ontkleuren_lengtes" class="dienst-naam">Lang haar + ontkleuren lengtes</label>
+                    <span class="dienst-prijs">€ 60</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="voorpigmenteren" data-price="10">
+                    <label for="voorpigmenteren" class="dienst-naam">Voorpigmenteren</label>
+                    <span class="dienst-prijs">€ 10</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="decapere" data-price="20">
+                    <label for="decapere" class="dienst-naam">Decaperen</label>
+                    <span class="dienst-prijs">€ 20</span>
+                </div>
+            </div>
+            <div class="dienst-categorie">
+                <h3>Kleur Behandelingen</h3>
+                <div class="dienst-item">
+                    <input type="checkbox" id="colormelt" data-price="45">
+                    <label for="colormelt" class="dienst-naam">Colormelt</label>
+                    <span class="dienst-prijs">€ 45</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="toner" data-price="20">
+                    <label for="toner" class="dienst-naam">Toner</label>
+                    <span class="dienst-prijs">€ 20</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="Kleurshampoo" data-price="25">
+                    <label for="Kleurshampoo" class="dienst-naam">Kleurshampoo</label>
+                    <span class="dienst-prijs">€ 25</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="kleuren_uitgroei" data-price="35">
+                    <label for="kleuren_uitgroei" class="dienst-naam">Kleuren uitgroei</label>
+                    <span class="dienst-prijs">€ 35</span>
+                </div>
+            </div>
+            <div class="dienst-categorie">
+                <h3>Extra's</h3>
+                <div class="dienst-item">
+                    <input type="checkbox" id="effect_per_lok" data-price="1.5">
+                    <label for="effect_per_lok" class="dienst-naam">Effect per lok</label>
+                    <div class="dienst-controls">
+                        <input type="number" id="effect_per_lok_aantal" value="1" min="1">
+                        <span class="dienst-prijs">€ 1.50</span>
+                    </div>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="extra_halve_tube" data-price="7.5">
+                    <label for="extra_halve_tube" class="dienst-naam">Halve tube</label>
+                    <span class="dienst-prijs">€ 7.50</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="extra_volledige_tube" data-price="15">
+                    <label for="extra_volledige_tube" class="dienst-naam">Volledige tube</label>
+                    <span class="dienst-prijs">€ 15</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="extra_poeder" data-price="5">
+                    <label for="extra_poeder" class="dienst-naam">Extra 30g poeder</label>
+                    <span class="dienst-prijs">€ 5</span>
+                </div>
+                <div class="dienst-item">
+                    <input type="checkbox" id="extra_wenkbrauwen" data-price="6">
+                    <label for="extra_wenkbrauwen" class="dienst-naam">Kleuren wenkbrauwen</label>
+                    <span class="dienst-prijs">€ 6</span>
+                </div>
+            </div>
+
+            <div class="dienst-categorie">
+                <h3>Overig</h3>
+                <div class="dienst-item">
+                    <input type="checkbox" id="Transport" data-price="5">
+                    <label for="Transport" class="dienst-naam">Transport</label>
+                    <span class="dienst-prijs">€ 5</span>
+                </div>
+            </div>
+
+            <div class="total-summary">
+                <form method="POST" action="{% url 'afrekenen' %}">
+                    {% csrf_token %}
+                    <div class="klant-select-container">
+                        <label for="klant-select">Kies een Klant</label>
+                        <select id="klant-select" name="klant_id" required>
+                            <option value="">Selecteer een klant...</option>
+                            {% for klant in klanten %}
+                                <option value="{{ klant.id }}">{{ klant.voornaam }} {{ klant.achternaam }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div id="geselecteerde-overzicht"></div>
+
+                    <div class="korting-container">
+                        <label for="korting_percentage">Extra korting (%)</label>
+                        <input type="number" id="korting_percentage" value="0" min="0" max="100" step="1">
+                    </div>
+                    <div class="total-amount">
+                        <span>Totaal Bedrag:</span>
+                        <span id="totaal_bedrag">€ 0.00</span>
+                    </div>
+
+                    <input type="hidden" name="rekening_data" id="rekening_data_input">
+                    <input type="hidden" name="totaal_bedrag" id="totaal_bedrag_input">
+
+                    <div class="button-container-bottom">
+                        <button type="submit" class="btn btn-save">
+                            <i class="fas fa-save"></i> Rekening Opslaan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Code voor zoekbare dropdown met Select2 ---
+        $('#klant-select').select2({
+            placeholder: 'Typ om een klant te zoeken...',
+            theme: 'bootstrap-5'
+        });
+
+        // --- AANGEPASTE Code voor de kassa-functionaliteit ---
+        const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+        const totaalBedragSpan = document.getElementById('totaal_bedrag');
+        const overzichtDiv = document.getElementById('geselecteerde-overzicht');
+        const effectPerLokAantalInput = document.getElementById('effect_per_lok_aantal');
+        const kortingPercentageInput = document.getElementById('korting_percentage'); // Nieuwe referentie
+
+        // Referenties naar de verborgen inputvelden
+        const rekeningDataInput = document.getElementById('rekening_data_input');
+        const totaalBedragInput = document.getElementById('totaal_bedrag_input');
+
+        function calculateTotal() {
+            let subtotal = 0; // Gebruik subtotal voor de prijs vóór korting
+            overzichtDiv.innerHTML = '<h4>Diensten</h4>';
+            let itemsSelected = false;
+
+            // Maak een lege lijst om de details van de rekening op te slaan
+            const rekeningItems = [];
+
+            allCheckboxes.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    itemsSelected = true;
+                    
+                    const pricePerUnit = parseFloat(checkbox.dataset.price);
+                    let finalPriceForItem = pricePerUnit;
+                    const label = document.querySelector(`label[for="${checkbox.id}"]`);
+                    let itemName = label ? label.textContent.trim() : 'Onbekende dienst';
+                    let itemNameToDisplay = itemName;
+
+                    if (checkbox.id === 'effect_per_lok' && effectPerLokAantalInput) {
+                        const quantity = parseInt(effectPerLokAantalInput.value) || 1;
+                        finalPriceForItem = pricePerUnit * quantity;
+                        itemNameToDisplay = `${itemName} x ${quantity}`;
+                    }
+                    
+                    subtotal += finalPriceForItem; // Tel op bij subtotal
+
+                    // Voeg de geselecteerde dienst toe aan onze data-lijst
+                    rekeningItems.push({
+                        naam: itemNameToDisplay,
+                        prijs: finalPriceForItem.toFixed(2) // Sla op met 2 decimalen
+                    });
+
+                    // --- Dit deel is voor het visuele overzicht op de pagina ---
+                    const overzichtItem = document.createElement('div');
+                    overzichtItem.className = 'overzicht-item';
+                    
+                    const naamSpan = document.createElement('span');
+                    naamSpan.className = 'overzicht-naam';
+                    naamSpan.textContent = itemNameToDisplay;
+                    
+                    const prijsSpan = document.createElement('span');
+                    prijsSpan.className = 'overzicht-prijs';
+                    prijsSpan.textContent = `€ ${finalPriceForItem.toFixed(2)}`;
+                    
+                    overzichtItem.appendChild(naamSpan);
+                    overzichtItem.appendChild(prijsSpan);
+                    overzichtDiv.appendChild(overzichtItem);
+                }
+            });
+
+            if (!itemsSelected) {
+                overzichtDiv.innerHTML = '';
+            }
+
+            // Bereken korting
+            const kortingPercentage = parseFloat(kortingPercentageInput.value) || 0;
+            let totalAfterDiscount = subtotal;
+            let kortingBedrag = 0;
+
+            if (kortingPercentage > 0) {
+                kortingBedrag = subtotal * (kortingPercentage / 100);
+                totalAfterDiscount = subtotal - kortingBedrag;
+
+                // Voeg korting toe aan het overzicht
+                const kortingItem = document.createElement('div');
+                kortingItem.className = 'overzicht-item korting-display';
+                const kortingNaamSpan = document.createElement('span');
+                kortingNaamSpan.textContent = `Korting (${kortingPercentage}%)`;
+                const kortingPrijsSpan = document.createElement('span');
+                kortingPrijsSpan.textContent = `- € ${kortingBedrag.toFixed(2)}`;
+                kortingItem.appendChild(kortingNaamSpan);
+                kortingItem.appendChild(kortingPrijsSpan);
+                overzichtDiv.appendChild(kortingItem);
+            }
+
+
+            // Update het zichtbare totaalbedrag
+            totaalBedragSpan.textContent = `€ ${totalAfterDiscount.toFixed(2)}`;
+
+            // --- VUL DE VERBORGEN VELDEN VOOR DE BACKEND ---
+
+            // 1. Maak een definitief data-object met de diensten en het totaal
+            const rekeningDataForBackend = {
+                diensten: rekeningItems,
+                subtotaal: subtotal.toFixed(2), // Voeg subtotaal toe
+                korting_percentage: kortingPercentage, // Voeg korting percentage toe
+                korting_bedrag: kortingBedrag.toFixed(2), // Voeg korting bedrag toe
+                totaal: totalAfterDiscount.toFixed(2)
+            };
+
+            // 2. Converteer het object naar een JSON-string en plaats het in het verborgen veld
+            rekeningDataInput.value = JSON.stringify(rekeningDataForBackend);
+            
+            // 3. Plaats het uiteindelijke totaalbedrag in het andere verborgen veld
+            totaalBedragInput.value = totalAfterDiscount.toFixed(2);
+        }
+
+        // Voeg event listeners toe
+        allCheckboxes.forEach(function(checkbox) {
+            checkbox.addEventListener('change', calculateTotal);
+        });
+
+        if (effectPerLokAantalInput) {
+            effectPerLokAantalInput.addEventListener('input', calculateTotal);
+        }
+
+        if (kortingPercentageInput) {
+            kortingPercentageInput.addEventListener('input', calculateTotal); // Luister naar wijzigingen in kortingsveld
+        }
+
+        // Roep de functie eenmaal aan bij het laden van de pagina
+        calculateTotal();
+    });
+    </script>
+</body>
+</html>

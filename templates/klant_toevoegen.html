@@ -1,0 +1,536 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="48x48" href="{% static 'images/favicon-48x48.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'images/android-chrome-192x192.png' %}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{% static 'images/android-chrome-512x512.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Klant Toevoegen - Professioneel Systeem</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eead0 0%, #764ba2c0 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 900px;
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px; /* Adjusted margin */
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        /* Adjusted button container for better spacing at the top */
+        .top-btn-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px; /* Space between the button and the form */
+            padding-top: 10px; /* Space from the header title */
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            color: #34495e;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+        }
+
+        .label-icon { /* New class for icon in label */
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            opacity: 0.7;
+            vertical-align: middle; /* Align icon vertically with text */
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="number"],
+        textarea {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            background: #fafafa;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus,
+        input[type="number"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+            font-family: inherit;
+        }
+
+        .percentage-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .percentage-group input {
+            flex: 1;
+        }
+
+        .percentage-group span {
+            font-size: 1.2em;
+            color: #7f8c8d;
+            font-weight: 600;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-item:hover {
+            background: #e9ecef;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #667eea;
+        }
+
+        .checkbox-item label {
+            margin: 0;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-container {
+            display: flex;
+            flex-wrap: wrap; /* Allow buttons to wrap */
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-decoration: none; /* For the anchor tag button */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn i { /* Styling for Font Awesome icons in buttons */
+            font-size: 1.2em;
+            vertical-align: middle;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #2c3e50;
+        }
+
+        .btn-secondary:hover {
+            background: #d5dbdb;
+            transform: translateY(-2px);
+        }
+
+        /* New style for the Dashboard button */
+        .btn-dashboard-compact {
+            background: linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%); /* A nice green color */
+            color: white;
+            padding: 10px 25px; /* Smaller padding */
+            font-size: 0.95em; /* Slightly smaller font */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Lighter shadow */
+        }
+
+        .btn-dashboard-compact:hover {
+            transform: translateY(-2px); /* Less dramatic hover effect */
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            align-items: end;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .btn-container {
+                flex-direction: column;
+                align-items: stretch; /* Stretch buttons to full width on small screens */
+            }
+
+            .btn {
+                padding: 12px 20px; /* Adjust button padding for mobile */
+                font-size: 1em;
+            }
+            .btn-dashboard-compact {
+                padding: 10px 20px; /* Adjust compact button padding for mobile */
+            }
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #c3e6cb;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Klant Toevoegen</h1>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            ✅ Klant succesvol toegevoegd aan het systeem!
+        </div>
+
+        <form id="klantForm" method="post" action="{% url 'klant_toevoegen' %}">
+            {% csrf_token %}
+
+            <div class="top-btn-container"> <a href="{% url 'dashboard' %}" class="btn btn-dashboard-compact">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="voornaam">
+                        <i class="label-icon fas fa-user"></i> Voornaam
+                    </label>
+                    <input type="text" id="voornaam" name="voornaam" placeholder="Voer de voornaam in" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="achternaam">
+                        <i class="label-icon fas fa-user"></i> Achternaam
+                    </label>
+                    <input type="text" id="achternaam" name="achternaam" placeholder="Voer de achternaam in" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">
+                        <i class="label-icon fas fa-envelope"></i> Emailadres
+                    </label>
+                    <input type="email" id="email" name="email" placeholder="Voer het emailadres in">
+                </div>
+
+                <div class="form-group">
+                    <label for="gsm">
+                        <i class="label-icon fas fa-phone"></i> GSM
+                    </label>
+                    <input type="tel" id="gsm" name="gsm" placeholder="Voer het GSM-nummer in">
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="volledig_adres">
+                        <i class="label-icon fas fa-map-marker-alt"></i> Volledig Adres
+                    </label>
+                    <input type="text" id="volledig_adres" name="volledig_adres" placeholder="Voer het volledige adres in">
+                </div>
+
+                <div class="form-group">
+                    <label for="allergieen">
+                        <i class="label-icon fas fa-allergies"></i> Allergieën
+                    </label>
+                    <input type="text" id="allergieen" name="allergieen" placeholder="Voer allergieën in (indien van toepassing)">
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <i class="label-icon fas fa-hand-sparkles"></i> Huid
+                    </label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="huid_schilfers" name="huid_schilfers" value="Schilfers">
+                            <label for="huid_schilfers">Schilfers</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="huid_eczema" name="huid_eczema" value="Eczema">
+                            <label for="huid_eczema">Eczema</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="huid_psoriasis" name="huid_psoriasis" value="Psoriasis">
+                            <label for="huid_psoriasis">Psoriasis</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="behandeling_hiervoor">
+                        <i class="label-icon fas fa-history"></i> Behandeling Hiervoor
+                    </label>
+                    <textarea id="behandeling_hiervoor" name="behandeling_hiervoor" placeholder="Beschrijf eerdere behandelingen"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="haartype">
+                        <i class="label-icon fas fa-cut"></i> Haartype
+                    </label>
+                    <input type="text" id="haartype" name="haartype" placeholder="Voer het haartype in">
+                </div>
+
+                <div class="form-group">
+                    <label for="natuurlijke_haarkleur">
+                        <i class="label-icon fas fa-palette"></i> Natuurlijke Haarkleur
+                    </label>
+                    <input type="text" id="natuurlijke_haarkleur" name="natuurlijke_haarkleur" placeholder="Voer de natuurlijke haarkleur in">
+                </div>
+
+                <div class="form-group">
+                    <label for="toonhoogte_lengtes">
+                        <i class="label-icon fas fa-brush"></i> Toonhoogte Lengtes
+                    </label>
+                    <input type="text" id="toonhoogte_lengtes" name="toonhoogte_lengtes" placeholder="Voer de toonhoogte lengtes in">
+                </div>
+
+                <div class="form-group">
+                    <label for="weerschijn">
+                        <i class="label-icon fas fa-lightbulb"></i> Weerschijn
+                    </label>
+                    <input type="text" id="weerschijn" name="weerschijn" placeholder="Voer de weerschijn in">
+                </div>
+
+                <div class="form-group">
+                    <label for="percentage_witte_haren_voor">
+                        <i class="label-icon fas fa-percent"></i> Witte Haren Voor (%)
+                    </label>
+                    <div class="percentage-group">
+                        <input type="number" id="percentage_witte_haren_voor" name="percentage_witte_haren_voor" min="0" max="100" placeholder="0">
+                        <span>%</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="percentage_witte_haren_achter">
+                        <i class="label-icon fas fa-percent"></i> Witte Haren Achter (%)
+                    </label>
+                    <div class="percentage-group">
+                        <input type="number" id="percentage_witte_haren_achter" name="percentage_witte_haren_achter" min="0" max="100" placeholder="0">
+                        <span>%</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="wens">
+                        <i class="label-icon fas fa-star"></i> Wens
+                    </label>
+                    <input type="text" id="wens" name="wens" placeholder="Voer de wens in">
+                </div>
+
+                <div class="form-group">
+                    <label for="color_formula">
+                        <i class="label-icon fas fa-tint"></i> Color Formula
+                    </label>
+                    <input type="text" id="color_formula" name="color_formula" placeholder="Voer de color formula in">
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="techniek">
+                        <i class="label-icon fas fa-tools"></i> Techniek
+                    </label>
+                    <textarea id="techniek" name="techniek" placeholder="Beschrijf de techniek die gebruikt werd"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="producten">
+                        <i class="label-icon fas fa-box"></i> Producten
+                    </label>
+                    <textarea id="producten" name="producten" placeholder="Beschrijf de gebruikte producten"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="inwerktijd">
+                        <i class="label-icon fas fa-clock"></i> Inwerktijd
+                    </label>
+                    <input type="text" id="inwerktijd" name="inwerktijd" placeholder="Voer de inwerktijd in">
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-plus-circle"></i> Klant Toevoegen
+                </button>
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                    <i class="fas fa-times-circle"></i> Annuleren
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Functie om geselecteerde huid opties te verzamelen
+        function updateHuidField() {
+            const checkboxes = document.querySelectorAll('input[name^="huid_"]:checked');
+            const selectedValues = Array.from(checkboxes).map(cb => cb.value);
+            
+            // Voeg een hidden input toe voor het huid veld
+            let huidInput = document.getElementById('huid_hidden');
+            if (!huidInput) {
+                huidInput = document.createElement('input');
+                huidInput.type = 'hidden';
+                huidInput.name = 'huid';
+                huidInput.id = 'huid_hidden';
+                document.getElementById('klantForm').appendChild(huidInput);
+            }
+            huidInput.value = selectedValues.join(', ');
+        }
+
+        // Event listeners voor huid checkboxes
+        document.querySelectorAll('input[name^="huid_"]').forEach(checkbox => {
+            checkbox.addEventListener('change', updateHuidField);
+        });
+
+        // Behoud visuele effecten
+        document.querySelectorAll('input, textarea').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.style.transform = 'translateY(-2px)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Update huid field bij form submit
+        document.getElementById('klantForm').addEventListener('submit', function() {
+            updateHuidField();
+        });
+    </script>
+</body>
+</html>
